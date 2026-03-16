@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 # Add backend to path
-backend_path = Path(__file__).parent.parent / "backend"
+backend_path = Path("/vercel/share/v0-project/backend")
 sys.path.insert(0, str(backend_path))
 
 from src.data_generator import DataGenerator
