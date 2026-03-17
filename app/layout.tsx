@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'OCP Energy Anomaly Detection Dashboard',
+  description: 'Advanced energy system monitoring with PCMCI causal analysis, anomaly detection, and Q-Learning optimization',
   generator: 'v0.app',
   icons: {
     icon: [
