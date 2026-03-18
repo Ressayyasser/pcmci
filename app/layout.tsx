@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { Sidebar } from '@/components/sidebar'
+import { LayoutWrapper } from '@/components/layout-wrapper'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -36,16 +36,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased bg-slate-900 text-slate-50">
-        <div className="flex h-screen">
-          <Sidebar />
-          <main className="flex-1 overflow-auto md:ml-0">
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800">
-              {children}
-            </div>
-          </main>
-        </div>
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased bg-slate-900 text-slate-50" suppressHydrationWarning>
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
         <Analytics />
       </body>
     </html>
