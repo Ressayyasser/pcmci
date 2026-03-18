@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
-
-// Mock data for PCMCI analysis
-const mockPCMCIData = {
+export async function GET(request: NextRequest) {
+  // Mock data for PCMCI analysis
+  const mockPCMCIData = {
   total_links: 55,
   significant_links: 12,
   method: 'PCMCI (Peter and Clark Momentary Conditional Independence)',
@@ -34,22 +33,22 @@ const mockPCMCIData = {
     { source: 'compressor_power_1', target: 'system_efficiency', strength: 0.73, lag: 1 },
     { source: 'grid_frequency', target: 'generator_load_2', strength: 0.65, lag: 1 },
   ],
-}
+  }
 
-export async function GET(request: NextRequest) {
   try {
     // Try to fetch from backend if available
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000'
     try {
       const response = await fetch(`${backendUrl}/api/pcmci`, {
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(2000),
       })
       if (response.ok) {
         const data = await response.json()
+        console.log('[v0] Backend PCMCI data used')
         return NextResponse.json(data)
       }
     } catch (e) {
-      // Backend not available, use mock data
       console.log('[v0] Backend unavailable, using mock PCMCI data')
     }
 
