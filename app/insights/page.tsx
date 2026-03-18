@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PageHeader } from '@/components/page-header'
 
 interface Insight {
   key_findings: string[]
@@ -33,17 +34,11 @@ export default function InsightsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <Link href="/" className="text-slate-400 hover:text-white mb-4 inline-block">
-            ← Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold">System Insights & Recommendations</h1>
-          <p className="text-slate-400 mt-2">Key findings and actionable recommendations from analysis</p>
-        </div>
-      </header>
+    <div className="text-white">
+      <PageHeader 
+        title="System Insights & Recommendations"
+        description="Key findings and actionable recommendations from analysis"
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">

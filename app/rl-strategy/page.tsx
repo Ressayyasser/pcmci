@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PageHeader } from '@/components/page-header'
 
 interface RLData {
   strategy_name: string
@@ -41,17 +42,11 @@ export default function RLStrategyPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <Link href="/" className="text-slate-400 hover:text-white mb-4 inline-block">
-            ← Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold">Q-Learning Optimization Strategy</h1>
-          <p className="text-slate-400 mt-2">Reinforcement learning for energy system control</p>
-        </div>
-      </header>
+    <div className="text-white">
+      <PageHeader 
+        title="Q-Learning Optimization Strategy"
+        description="Reinforcement learning for energy system control"
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
