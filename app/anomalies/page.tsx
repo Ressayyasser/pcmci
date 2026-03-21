@@ -45,15 +45,15 @@ export default function AnomaliesPage() {
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-8 py-16 w-full">
         {loading ? (
           <div className="flex items-center justify-center h-96">
-            <p className="text-slate-400">Loading anomaly analysis...</p>
+            <p className="text-muted-foreground">Loading anomaly analysis...</p>
           </div>
         ) : error ? (
-          <Card className="bg-red-900/20 border-red-500">
+          <Card className="bg-destructive/10 border-destructive">
             <CardContent className="pt-6">
-              <p className="text-red-400">Error: {error}</p>
+              <p className="text-destructive">Error: {error}</p>
             </CardContent>
           </Card>
         ) : data ? (

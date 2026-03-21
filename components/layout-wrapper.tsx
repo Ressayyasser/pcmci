@@ -5,10 +5,10 @@ import { ReactNode } from 'react'
 
 export function LayoutWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen">
+    <div className="flex w-full h-screen bg-background">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
-        <div className="min-h-screen bg-background">
+      <main className="flex-1 overflow-auto w-full">
+        <div className="w-full min-h-screen bg-background">
           {children}
         </div>
       </main>

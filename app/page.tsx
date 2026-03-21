@@ -51,14 +51,14 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="text-white">
+    <div className="w-full">
       <PageHeader 
         title="OCP Energy Dashboard"
         description="Advanced anomaly detection with causal analysis"
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-8 py-16 w-full">
         {loading ? (
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
