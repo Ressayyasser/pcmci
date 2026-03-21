@@ -58,23 +58,23 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-              <p>Loading dashboard data...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading dashboard data...</p>
             </div>
           </div>
         ) : error ? (
-          <Card className="bg-red-900/20 border-red-500">
+          <Card className="bg-destructive/10 border-destructive">
             <CardContent className="pt-6">
-              <p className="text-red-400">Error: {error}</p>
+              <p className="text-destructive">Error: {error}</p>
             </CardContent>
           </Card>
         ) : summary ? (
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="bg-slate-700 border border-slate-600">
+            <TabsList className="bg-secondary border border-border">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="pcmci">PCMCI Analysis</TabsTrigger>
               <TabsTrigger value="anomalies">Anomalies</TabsTrigger>
@@ -84,67 +84,67 @@ export default function Home() {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Data Card */}
-                <Card className="bg-slate-700 border-slate-600 hover:bg-slate-600 transition">
+                <Card className="bg-card border-border hover:border-primary/50 transition-colors">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg text-blue-400">Dataset</CardTitle>
+                    <CardTitle className="text-lg text-primary">Dataset</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-3">
                     <div>
-                      <p className="text-sm text-slate-400">Total Records</p>
-                      <p className="text-2xl font-bold">{summary.data.total_records.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">Total Records</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{summary.data.total_records.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-400">Variables</p>
-                      <p className="text-2xl font-bold">{summary.data.num_variables}</p>
+                      <p className="text-sm text-muted-foreground">Variables</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{summary.data.num_variables}</p>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* PCMCI Card */}
-                <Card className="bg-slate-700 border-slate-600 hover:bg-slate-600 transition">
+                <Card className="bg-card border-border hover:border-accent/50 transition-colors">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg text-green-400">Causal Links</CardTitle>
+                    <CardTitle className="text-lg text-accent">Causal Links</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-3">
                     <div>
-                      <p className="text-sm text-slate-400">Total Links</p>
-                      <p className="text-2xl font-bold">{summary.pcmci.num_links}</p>
+                      <p className="text-sm text-muted-foreground">Total Links</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{summary.pcmci.num_links}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-400">Significant (p&lt;0.05)</p>
-                      <p className="text-2xl font-bold">{summary.pcmci.significant_links}</p>
+                      <p className="text-sm text-muted-foreground">Significant (p&lt;0.05)</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{summary.pcmci.significant_links}</p>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Anomalies Card */}
-                <Card className="bg-slate-700 border-slate-600 hover:bg-slate-600 transition">
+                <Card className="bg-card border-border hover:border-destructive/50 transition-colors">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg text-orange-400">Anomalies</CardTitle>
+                    <CardTitle className="text-lg text-destructive">Anomalies</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-3">
                     <div>
-                      <p className="text-sm text-slate-400">Detected</p>
-                      <p className="text-2xl font-bold">{summary.anomalies.total_detected}</p>
+                      <p className="text-sm text-muted-foreground">Detected</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{summary.anomalies.total_detected}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-400">Detection Rate</p>
-                      <p className="text-2xl font-bold">{(summary.anomalies.detection_rate * 100).toFixed(2)}%</p>
+                      <p className="text-sm text-muted-foreground">Detection Rate</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{(summary.anomalies.detection_rate * 100).toFixed(2)}%</p>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Q-Learning Card */}
-                <Card className="bg-slate-700 border-slate-600 hover:bg-slate-600 transition">
+                <Card className="bg-card border-border hover:border-chart-3/50 transition-colors">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg text-purple-400">Q-Learning</CardTitle>
+                    <CardTitle className="text-lg text-chart-3">Q-Learning</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-3">
                     <div>
-                      <p className="text-sm text-slate-400">Backtest Reward</p>
-                      <p className="text-2xl font-bold">{summary.rl_agent.backtest_reward.toFixed(3)}</p>
+                      <p className="text-sm text-muted-foreground">Backtest Reward</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">{summary.rl_agent.backtest_reward.toFixed(3)}</p>
                     </div>
                     <div>
                       <p className="text-sm text-slate-400">Episodes</p>

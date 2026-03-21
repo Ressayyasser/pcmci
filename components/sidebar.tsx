@@ -89,28 +89,28 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 h-screen bg-slate-950 border-r border-slate-800 transition-all duration-300',
+          'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300',
           isCollapsed ? 'w-20' : 'w-64',
           !isOpen && 'md:translate-x-0 -translate-x-full md:static'
         )}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="border-b border-slate-800 p-4 flex items-center justify-between">
+          <div className="border-b border-sidebar-border p-4 flex items-center justify-between">
             {!isCollapsed && (
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                  <BarChart3 className="w-6 h-6 text-sidebar-primary-foreground" />
                 </div>
                 <div className="text-sm">
-                  <p className="font-bold text-white">OCP Energy</p>
-                  <p className="text-xs text-slate-400">Dashboard</p>
+                  <p className="font-bold text-sidebar-foreground">OCP Energy</p>
+                  <p className="text-xs text-muted-foreground">Dashboard</p>
                 </div>
               </div>
             )}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="hidden md:flex text-slate-400 hover:text-white transition-colors"
+              className="hidden md:flex text-muted-foreground hover:text-sidebar-foreground transition-colors"
             >
               <ChevronDown
                 className={cn(
@@ -135,8 +135,8 @@ export function Sidebar() {
                 }}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200',
-                  'hover:bg-slate-800 text-slate-300',
-                  isActive(item.href) && 'bg-blue-600 text-white'
+                  'hover:bg-sidebar-accent text-sidebar-foreground',
+                  isActive(item.href) && 'bg-sidebar-primary text-sidebar-primary-foreground'
                 )}
               >
                 <span className="flex-shrink-0">{item.icon}</span>
@@ -145,11 +145,11 @@ export function Sidebar() {
             ))}
 
             {/* Divider */}
-            {!isCollapsed && <div className="h-px bg-slate-800 my-4" />}
+            {!isCollapsed && <div className="h-px bg-sidebar-border my-4" />}
 
             {/* Analysis section */}
             {!isCollapsed && (
-              <p className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Analyse & Insights
               </p>
             )}
@@ -164,15 +164,15 @@ export function Sidebar() {
                 }}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group',
-                  'hover:bg-slate-800 text-slate-300',
-                  isActive(item.href) && 'bg-blue-600 text-white'
+                  'hover:bg-sidebar-accent text-sidebar-foreground',
+                  isActive(item.href) && 'bg-sidebar-primary text-sidebar-primary-foreground'
                 )}
               >
                 <span className="flex-shrink-0">{item.icon}</span>
                 {!isCollapsed && (
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.label}</p>
-                    <p className="text-xs text-slate-500 truncate group-hover:text-slate-400">
+                    <p className="text-xs text-muted-foreground truncate group-hover:text-sidebar-accent-foreground">
                       {item.description}
                     </p>
                   </div>
@@ -182,12 +182,12 @@ export function Sidebar() {
           </nav>
 
           {/* Footer */}
-          <div className="border-t border-slate-800 p-4">
+          <div className="border-t border-sidebar-border p-4">
             {!isCollapsed && (
-              <div className="bg-slate-900 rounded-lg p-3 space-y-1">
-                <p className="text-xs font-semibold text-slate-300">Version</p>
-                <p className="text-xs text-slate-500">OCP Dashboard MVP</p>
-                <p className="text-xs text-slate-600 mt-2">
+              <div className="bg-secondary rounded-lg p-3 space-y-1">
+                <p className="text-xs font-semibold text-sidebar-foreground">Version</p>
+                <p className="text-xs text-muted-foreground">OCP Dashboard MVP</p>
+                <p className="text-xs text-muted-foreground mt-2">
                   Système avancé de détection d'anomalies énergétiques
                 </p>
               </div>
