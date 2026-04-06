@@ -118,20 +118,100 @@ export default function CausalDAGPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="w-full bg-muted rounded-lg p-8 min-h-96 flex items-center justify-center border-2 border-dashed border-border">
-                  <div className="text-center space-y-4">
-                    <Zap className="w-12 h-12 text-primary mx-auto" />
-                    <div>
-                      <p className="text-foreground font-semibold">DAG Visualization Ready</p>
-                      <p className="text-muted-foreground text-sm">
-                        Interactive graph rendering with Cytoscape.js will display here
-                      </p>
-                      <p className="text-muted-foreground text-xs mt-2">
-                        {dagData.nodes.length} nodes × {dagData.edges.length} temporal causal links
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                {/* SVG DAG Visualization */}
+                <svg width="100%" height="500" className="w-full bg-secondary rounded-lg border border-border">
+                  <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                      <polygon points="0 0, 10 3, 0 6" fill="currentColor" className="text-primary" />
+                    </marker>
+                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                      <polygon points="0 0, 10 3, 0 6" fill="currentColor" className="text-accent" />
+                    </marker>
+                  </defs>
+
+                  {/* Draw edges (causal links) */}
+                  {relevantEdges.map((edge, idx) => {
+                    const sourceIdx = dagData.nodes.findIndex(n => n.id === edge.source)
+                    const targetIdx = dagData.nodes.findIndex(n => n.id === edge.target)
+                    const nodesPerRow = Math.ceil(Math.sqrt(dagData.nodes.length))
+                    
+                    const x1 = ((sourceIdx % nodesPerRow) + 1) * (460 / nodesPerRow) + 20
+                    const y1 = Math.floor(sourceIdx / nodesPerRow) * 100 + 60
+                    const x2 = ((targetIdx % nodesPerRow) + 1) * (460 / nodesPerRow) + 20
+                    const y2 = Math.floor(targetIdx / nodesPerRow) * 100 + 60
+
+                    const isHighlighted = selectedNode === edge.source || selectedNode === edge.target
+
+                    return (
+                      <g key={edge.id}>
+                        {/* Curved path with lag label */}
+                        <path
+                          d={`M ${x1} ${y1} Q ${(x1 + x2) / 2} ${(y1 + y2) / 2 - 50} ${x2} ${y2}`}
+                          stroke={isHighlighted ? 'rgb(0, 229, 204)' : 'rgb(0, 217, 255)'}
+                          strokeWidth={isHighlighted ? '3' : '2'}
+                          fill="none"
+                          opacity={selectedNode ? (isHighlighted ? 1 : 0.2) : 0.6}
+                          markerEnd={isHighlighted ? 'url(#arrowhead-highlight)' : 'url(#arrowhead)'}
+                          className="transition-all"
+                        />
+                        {/* Lag label */}
+                        <text
+                          x={(x1 + x2) / 2}
+                          y={(y1 + y2) / 2 - 50}
+                          textAnchor="middle"
+                          className="text-xs fill-primary pointer-events-none font-semibold"
+                          fontSize="12"
+                        >
+                          τ={edge.lag}
+                        </text>
+                      </g>
+                    )
+                  })}
+
+                  {/* Draw nodes (variables) */}
+                  {dagData.nodes.map((node, idx) => {
+                    const nodesPerRow = Math.ceil(Math.sqrt(dagData.nodes.length))
+                    const x = ((idx % nodesPerRow) + 1) * (460 / nodesPerRow) + 20
+                    const y = Math.floor(idx / nodesPerRow) * 100 + 60
+                    
+                    const isSelected = selectedNode === node.id
+                    const isConnected = relevantEdges.some(e => e.source === node.id || e.target === node.id)
+                    const nodeColor = node.type === 'exogenous' ? 'rgb(0, 217, 255)' :
+                                    node.type === 'state' ? 'rgb(0, 229, 204)' :
+                                    'rgb(124, 92, 255)'
+
+                    return (
+                      <g key={node.id}>
+                        {/* Node circle */}
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r={isSelected ? 35 : 28}
+                          fill={isSelected ? nodeColor : 'rgb(26, 31, 58)'}
+                          stroke={nodeColor}
+                          strokeWidth={isSelected ? 3 : 2}
+                          opacity={!selectedNode || isSelected || isConnected ? 1 : 0.3}
+                          className="cursor-pointer transition-all hover:opacity-100"
+                          onClick={() => setSelectedNode(selectedNode === node.id ? null : node.id)}
+                        />
+                        {/* Node label */}
+                        <text
+                          x={x}
+                          y={y}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className={`font-semibold pointer-events-none transition-all text-xs ${
+                            isSelected ? 'fill-background' : 'fill-foreground'
+                          }`}
+                          fontSize={isSelected ? 11 : 10}
+                          fontWeight="bold"
+                        >
+                          {node.label.length > 8 ? node.label.substring(0, 8) : node.label}
+                        </text>
+                      </g>
+                    )
+                  })}
+                </svg>
 
                 {/* Node List */}
                 <div className="mt-8">
