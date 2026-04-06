@@ -13,6 +13,10 @@ import {
   Menu,
   X,
   ChevronDown,
+  GitBranch,
+  Sliders,
+  Activity,
+  BookOpen,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -57,6 +61,33 @@ const analysisNav: NavItem[] = [
     href: '/insights',
     icon: <Lightbulb className="w-5 h-5" />,
     description: 'Recommandations',
+  },
+]
+
+const advancedNav: NavItem[] = [
+  {
+    label: 'DAG Causal',
+    href: '/causal-dag',
+    icon: <GitBranch className="w-5 h-5" />,
+    description: 'Graphe PCMCI temporel',
+  },
+  {
+    label: 'Scénarios',
+    href: '/scenario-simulator',
+    icon: <Sliders className="w-5 h-5" />,
+    description: 'Test anomalies & RL',
+  },
+  {
+    label: 'Contrôle Temps-réel',
+    href: '/realtime-control',
+    icon: <Activity className="w-5 h-5" />,
+    description: 'Signaux interactifs',
+  },
+  {
+    label: 'Explications',
+    href: '/explained-recommendations',
+    icon: <BookOpen className="w-5 h-5" />,
+    description: 'Recommandations détaillées',
   },
 ]
 
@@ -155,6 +186,42 @@ export function Sidebar() {
               </p>
             )}
             {analysisNav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                    setIsOpen(false)
+                  }
+                }}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group',
+                  'hover:bg-sidebar-accent text-sidebar-foreground',
+                  isActive(item.href) && 'bg-sidebar-primary text-sidebar-primary-foreground'
+                )}
+              >
+                <span className="flex-shrink-0">{item.icon}</span>
+                {!isCollapsed && (
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.label}</p>
+                    <p className="text-xs text-muted-foreground truncate group-hover:text-sidebar-accent-foreground">
+                      {item.description}
+                    </p>
+                  </div>
+                )}
+              </Link>
+            ))}
+
+            {/* Divider */}
+            {!isCollapsed && <div className="h-px bg-sidebar-border my-4" />}
+
+            {/* Advanced section */}
+            {!isCollapsed && (
+              <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Avancé
+              </p>
+            )}
+            {advancedNav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
