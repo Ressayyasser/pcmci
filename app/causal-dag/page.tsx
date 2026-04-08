@@ -46,8 +46,10 @@ export default function CausalDAGPage() {
   useEffect(() => {
     const fetchDAG = async () => {
       try {
-        const res = await fetch('/api/advanced?endpoint=dag')
+        const res = await fetch('/api/dag')
+        if (!res.ok) throw new Error('Failed to fetch DAG')
         const data = await res.json()
+        console.log('[v0] DAG data loaded:', data)
         setDagData(data)
       } catch (err) {
         console.error('[v0] DAG fetch error:', err)
@@ -117,101 +119,178 @@ export default function CausalDAGPage() {
                   Click nodes to highlight their connections.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                {/* SVG DAG Visualization */}
-                <svg width="100%" height="500" className="w-full bg-secondary rounded-lg border border-border">
-                  <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                      <polygon points="0 0, 10 3, 0 6" fill="currentColor" className="text-primary" />
-                    </marker>
-                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                      <polygon points="0 0, 10 3, 0 6" fill="currentColor" className="text-accent" />
-                    </marker>
-                  </defs>
+              <CardContent className="space-y-6">
+                {/* SVG DAG Visualization with better layout */}
+                <div className="w-full overflow-x-auto">
+                  <svg width="100%" height="600" viewBox="0 0 1000 600" className="w-full bg-secondary rounded-lg border border-border min-w-full">
+                    <defs>
+                      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#00d9ff" />
+                      </marker>
+                      <marker id="arrowhead-highlight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#00e5cc" />
+                      </marker>
+                    </defs>
 
-                  {/* Draw edges (causal links) */}
-                  {relevantEdges.map((edge, idx) => {
-                    const sourceIdx = dagData.nodes.findIndex(n => n.id === edge.source)
-                    const targetIdx = dagData.nodes.findIndex(n => n.id === edge.target)
-                    const nodesPerRow = Math.ceil(Math.sqrt(dagData.nodes.length))
-                    
-                    const x1 = ((sourceIdx % nodesPerRow) + 1) * (460 / nodesPerRow) + 20
-                    const y1 = Math.floor(sourceIdx / nodesPerRow) * 100 + 60
-                    const x2 = ((targetIdx % nodesPerRow) + 1) * (460 / nodesPerRow) + 20
-                    const y2 = Math.floor(targetIdx / nodesPerRow) * 100 + 60
+                    {/* Draw edges (causal links) */}
+                    {relevantEdges.map((edge) => {
+                      const sourceNode = dagData.nodes.find(n => n.id === edge.source)
+                      const targetNode = dagData.nodes.find(n => n.id === edge.target)
+                      if (!sourceNode || !targetNode) return null
 
-                    const isHighlighted = selectedNode === edge.source || selectedNode === edge.target
+                      // Layered layout: exogenous (top), state (middle), endogenous (bottom)
+                      const getY = (type: string) => type === 'exogenous' ? 80 : type === 'state' ? 300 : 520
+                      const getX = (id: string, type: string) => {
+                        const sameTypeNodes = dagData.nodes.filter(n => n.type === type)
+                        const idx = sameTypeNodes.findIndex(n => n.id === id)
+                        return 100 + (idx + 1) * (900 / (sameTypeNodes.length + 1))
+                      }
 
-                    return (
-                      <g key={edge.id}>
-                        {/* Curved path with lag label */}
-                        <path
-                          d={`M ${x1} ${y1} Q ${(x1 + x2) / 2} ${(y1 + y2) / 2 - 50} ${x2} ${y2}`}
-                          stroke={isHighlighted ? 'rgb(0, 229, 204)' : 'rgb(0, 217, 255)'}
-                          strokeWidth={isHighlighted ? '3' : '2'}
-                          fill="none"
-                          opacity={selectedNode ? (isHighlighted ? 1 : 0.2) : 0.6}
-                          markerEnd={isHighlighted ? 'url(#arrowhead-highlight)' : 'url(#arrowhead)'}
-                          className="transition-all"
-                        />
-                        {/* Lag label */}
-                        <text
-                          x={(x1 + x2) / 2}
-                          y={(y1 + y2) / 2 - 50}
-                          textAnchor="middle"
-                          className="text-xs fill-primary pointer-events-none font-semibold"
-                          fontSize="12"
-                        >
-                          τ={edge.lag}
-                        </text>
-                      </g>
-                    )
-                  })}
+                      const x1 = getX(sourceNode.id, sourceNode.type)
+                      const y1 = getY(sourceNode.type)
+                      const x2 = getX(targetNode.id, targetNode.type)
+                      const y2 = getY(targetNode.type)
 
-                  {/* Draw nodes (variables) */}
-                  {dagData.nodes.map((node, idx) => {
-                    const nodesPerRow = Math.ceil(Math.sqrt(dagData.nodes.length))
-                    const x = ((idx % nodesPerRow) + 1) * (460 / nodesPerRow) + 20
-                    const y = Math.floor(idx / nodesPerRow) * 100 + 60
-                    
-                    const isSelected = selectedNode === node.id
-                    const isConnected = relevantEdges.some(e => e.source === node.id || e.target === node.id)
-                    const nodeColor = node.type === 'exogenous' ? 'rgb(0, 217, 255)' :
-                                    node.type === 'state' ? 'rgb(0, 229, 204)' :
-                                    'rgb(124, 92, 255)'
+                      const isHighlighted = selectedNode === edge.source || selectedNode === edge.target
+                      const strength = Math.abs(edge.strength)
 
-                    return (
-                      <g key={node.id}>
-                        {/* Node circle */}
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r={isSelected ? 35 : 28}
-                          fill={isSelected ? nodeColor : 'rgb(26, 31, 58)'}
-                          stroke={nodeColor}
-                          strokeWidth={isSelected ? 3 : 2}
-                          opacity={!selectedNode || isSelected || isConnected ? 1 : 0.3}
-                          className="cursor-pointer transition-all hover:opacity-100"
-                          onClick={() => setSelectedNode(selectedNode === node.id ? null : node.id)}
-                        />
-                        {/* Node label */}
-                        <text
-                          x={x}
-                          y={y}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className={`font-semibold pointer-events-none transition-all text-xs ${
-                            isSelected ? 'fill-background' : 'fill-foreground'
-                          }`}
-                          fontSize={isSelected ? 11 : 10}
-                          fontWeight="bold"
-                        >
-                          {node.label.length > 8 ? node.label.substring(0, 8) : node.label}
-                        </text>
-                      </g>
-                    )
-                  })}
-                </svg>
+                      return (
+                        <g key={edge.id} opacity={selectedNode ? (isHighlighted ? 1 : 0.2) : 0.7}>
+                          {/* Curved path with lag-based styling */}
+                          <path
+                            d={`M ${x1} ${y1} Q ${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`}
+                            stroke={isHighlighted ? '#00e5cc' : '#00d9ff'}
+                            strokeWidth={isHighlighted ? 3 : 1.5 + strength}
+                            fill="none"
+                            markerEnd={isHighlighted ? 'url(#arrowhead-highlight)' : 'url(#arrowhead)'}
+                            className="transition-all"
+                          />
+                          {/* Lag label */}
+                          <text
+                            x={(x1 + x2) / 2}
+                            y={(y1 + y2) / 2 - 15}
+                            textAnchor="middle"
+                            fill="#00d9ff"
+                            fontSize="11"
+                            fontWeight="bold"
+                            className="pointer-events-none"
+                          >
+                            τ={edge.lag}
+                          </text>
+                          {/* Strength label */}
+                          <text
+                            x={(x1 + x2) / 2}
+                            y={(y1 + y2) / 2 + 10}
+                            textAnchor="middle"
+                            fill="#a6a6b0"
+                            fontSize="10"
+                            className="pointer-events-none"
+                          >
+                            r={edge.strength.toFixed(2)}
+                          </text>
+                        </g>
+                      )
+                    })}
+
+                    {/* Draw nodes (variables) */}
+                    {dagData.nodes.map((node) => {
+                      const getY = (type: string) => type === 'exogenous' ? 80 : type === 'state' ? 300 : 520
+                      const getX = (id: string, type: string) => {
+                        const sameTypeNodes = dagData.nodes.filter(n => n.type === type)
+                        const idx = sameTypeNodes.findIndex(n => n.id === id)
+                        return 100 + (idx + 1) * (900 / (sameTypeNodes.length + 1))
+                      }
+
+                      const x = getX(node.id, node.type)
+                      const y = getY(node.type)
+                      const isSelected = selectedNode === node.id
+                      const isConnected = relevantEdges.some(e => e.source === node.id || e.target === node.id)
+                      const radius = isSelected ? 35 : 28
+
+                      return (
+                        <g key={node.id} opacity={!selectedNode || isSelected || isConnected ? 1 : 0.3}>
+                          {/* Outer glow on selected */}
+                          {isSelected && (
+                            <circle cx={x} cy={y} r={radius + 8} fill="none" stroke={node.color} strokeWidth="1" opacity="0.5" />
+                          )}
+                          {/* Node circle */}
+                          <circle
+                            cx={x}
+                            cy={y}
+                            r={radius}
+                            fill={isSelected ? node.color : 'rgb(26, 31, 58)'}
+                            stroke={node.color}
+                            strokeWidth={isSelected ? 3 : 2}
+                            className="cursor-pointer transition-all hover:opacity-100"
+                            onClick={() => setSelectedNode(selectedNode === node.id ? null : node.id)}
+                          />
+                          {/* Node label */}
+                          <text
+                            x={x}
+                            y={y - 5}
+                            textAnchor="middle"
+                            fill={isSelected ? 'rgb(26, 31, 58)' : 'white'}
+                            fontSize={isSelected ? 12 : 11}
+                            fontWeight="bold"
+                            className="pointer-events-none"
+                          >
+                            {node.label.split(' ').map(w => w.substring(0, 4)).join(' ')}
+                          </text>
+                          {/* Type badge */}
+                          <text
+                            x={x}
+                            y={y + 10}
+                            textAnchor="middle"
+                            fill="#a6a6b0"
+                            fontSize="9"
+                            className="pointer-events-none"
+                          >
+                            {node.type === 'exogenous' ? '→' : node.type === 'state' ? '◇' : '◆'}
+                          </text>
+                        </g>
+                      )
+                    })}
+                  </svg>
+                </div>
+
+                {/* Legend */}
+                <div className="grid grid-cols-3 gap-4 mt-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#00d9ff' }}></div>
+                    <span className="text-muted-foreground">Exogenous (→)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#00e5cc' }}></div>
+                    <span className="text-muted-foreground">State Variables (◇)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#7c5cff' }}></div>
+                    <span className="text-muted-foreground">Endogenous (◆)</span>
+                  </div>
+                </div>
+
+                {selectedNode && (
+                  <Card className="bg-accent/10 border-accent mt-4">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-accent text-sm">
+                        {dagData.nodes.find(n => n.id === selectedNode)?.label}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-sm">
+                      <p className="text-muted-foreground">
+                        {dagData.nodes.find(n => n.id === selectedNode)?.description}
+                      </p>
+                      <div className="flex gap-4 text-xs">
+                        <span className="text-primary">
+                          In-degree: {relevantEdges.filter(e => e.target === selectedNode).length}
+                        </span>
+                        <span className="text-accent">
+                          Out-degree: {relevantEdges.filter(e => e.source === selectedNode).length}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Node List */}
                 <div className="mt-8">
