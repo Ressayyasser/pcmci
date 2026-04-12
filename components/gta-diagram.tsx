@@ -1,381 +1,231 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AlertTriangle, Zap } from 'lucide-react'
+import React, { useState } from 'react'
+import { Activity } from 'lucide-react'
 
-interface GTAState {
-  turbineTemp: number
-  turbinePressure: number
-  steamFlow: number
-  condenserTemp: number
-  excitationVoltage: number
-  reactiveVoltage: number
-  cosinusValue: number
-  alternatorPower: number
-  vibrationType3: number
-  usureB3: number
+export interface GTADiagramProps {
+  gtaNumber?: number
 }
 
-interface ComponentData {
-  id: string
-  label: string
-  value: string | number
-  unit: string
-  normal: [number, number]
-  warning: [number, number]
-  critical: [number, number]
-  type: 'temp' | 'pressure' | 'flow' | 'voltage' | 'power'
-}
-
-interface GTADiagramProps {
-  gtaNumber: number
-  state?: Partial<GTAState>
-  onComponentClick?: (componentId: string) => void
-}
-
-export function GTADiagram({ gtaNumber = 3, state = {}, onComponentClick }: GTADiagramProps) {
-  const defaultState: GTAState = {
-    turbineTemp: 55.7,
-    turbinePressure: 55.7,
-    steamFlow: 16.3,
-    condenserTemp: 20.6,
-    excitationVoltage: 0.1,
-    reactiveVoltage: 0.1,
-    cosinusValue: 0.72,
-    alternatorPower: 0.1,
-    vibrationType3: 0.4,
-    usureB3: 0.0,
-  }
-
-  const currentState = { ...defaultState, ...state }
-
+export function GTADiagram({ gtaNumber = 3 }: GTADiagramProps) {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null)
 
-  const getStatusColor = (value: number, normal: [number, number], warning: [number, number], critical: [number, number]) => {
-    if (value >= critical[0] && value <= critical[1]) return '#ff4444'
-    if (value >= warning[0] && value <= warning[1]) return '#ffaa00'
-    if (value >= normal[0] && value <= normal[1]) return '#00e5cc'
-    return '#7c5cff'
+  // Real-time mock data for GTA
+  const gtaData = {
+    sourceHP: { debit: 59.3, pression: 83.1, temperature: 555.4 },
+    sourceMP: { debit: 8.7, pression: 14.2, temperature: 312.5 },
+    turbine: { speed: 3000, power: 145.6, efficiency: 87.2, vibration: 2.3 },
+    alternateur: { output: 165.3, voltage: 15.75, frequency: 50.0, cosFi: 0.95 },
+    condenseur: { pressure: 0.08, temperature: 42.5, flow: 289.5 },
+    reseauNT: { tension: 23.1, courant: 12.5, puissance: 24.8, freq: 50.0 },
   }
 
-  const components: ComponentData[] = [
-    {
-      id: '20TE171C',
-      label: 'Entrée HP',
-      value: currentState.turbineTemp,
-      unit: '°C',
-      normal: [50, 60],
-      warning: [45, 65],
-      critical: [40, 70],
-      type: 'temp',
-    },
-    {
-      id: '20FT402C',
-      label: 'Débit Vapeur',
-      value: currentState.steamFlow,
-      unit: 't/h',
-      normal: [15, 17],
-      warning: [14, 18],
-      critical: [13, 19],
-      type: 'flow',
-    },
-    {
-      id: '20ET172C',
-      label: 'Turbine Désarmée',
-      value: 39.4,
-      unit: '°C',
-      normal: [35, 45],
-      warning: [30, 50],
-      critical: [25, 55],
-      type: 'temp',
-    },
-    {
-      id: '20PS107C',
-      label: 'Pression Vapeur',
-      value: 55.7,
-      unit: 'bar',
-      normal: [50, 60],
-      warning: [45, 65],
-      critical: [40, 70],
-      type: 'pressure',
-    },
-    {
-      id: 'Alternateur3',
-      label: 'Alternateur 3',
-      value: currentState.alternatorPower,
-      unit: 'MW',
-      normal: [0.08, 0.12],
-      warning: [0.05, 0.15],
-      critical: [0, 0.2],
-      type: 'power',
-    },
-    {
-      id: 'VIB1-TV3',
-      label: 'Vibration TV3',
-      value: currentState.vibrationType3,
-      unit: 'μm',
-      normal: [0.2, 0.5],
-      warning: [0.15, 0.6],
-      critical: [0.1, 0.8],
-      type: 'flow',
-    },
-  ]
-
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-primary">GTA{gtaNumber} - Schéma Technique Interactive</CardTitle>
-            <CardDescription>Cliquez sur les composants pour voir les détails en temps réel</CardDescription>
-          </div>
-          <div className="text-right text-sm">
-            <p className="text-muted-foreground">Alternateur {gtaNumber}</p>
-            <p className="text-accent font-bold">
-              {currentState.alternatorPower.toFixed(2)} MW
-            </p>
-          </div>
+    <div className="w-full min-h-[750px] bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-xl border border-border space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground">GTA Platform</h2>
+          <p className="text-muted-foreground text-sm">Contrôle Industriel</p>
         </div>
-      </CardHeader>
+        <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-green-500/10 border border-green-500">
+          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+          <span className="text-green-400 font-semibold text-sm">NORMAL</span>
+        </div>
+      </div>
 
-      <CardContent className="space-y-6">
-        {/* SVG Diagram */}
-        <div className="w-full bg-secondary rounded-lg p-4 overflow-x-auto border border-border">
-          <svg viewBox="0 0 1200 700" className="w-full min-w-full" preserveAspectRatio="xMidYMid meet">
-            {/* Background */}
-            <rect width="1200" height="700" fill="rgb(26, 31, 58)" />
+      {/* Main Schematic - Professional Industrial Style */}
+      <svg width="100%" height="550" viewBox="0 0 1400 550" className="bg-slate-950/50 rounded-lg border border-slate-800">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#00d9ff" />
+          </marker>
+        </defs>
 
-            {/* HP Steam Inlet (Left) */}
-            <rect x="50" y="150" width="80" height="150" fill="none" stroke="#00d9ff" strokeWidth="2" rx="5" />
-            <text x="90" y="240" textAnchor="middle" fill="#00d9ff" fontSize="14" fontWeight="bold">
-              Vapeur HP
-            </text>
-            <circle
-              cx="90"
-              cy="150"
-              r="20"
-              fill={getStatusColor(currentState.turbineTemp, [50, 60], [45, 65], [40, 70])}
-              stroke="#fff"
-              strokeWidth="2"
-              opacity="0.8"
-              className="cursor-pointer hover:opacity-100"
-              onClick={() => {
-                setSelectedComponent('20TE171C')
-                onComponentClick?.('20TE171C')
-              }}
-            />
-            <text x="90" y="155" textAnchor="middle" fill="#000" fontSize="12" fontWeight="bold">
-              {currentState.turbineTemp.toFixed(1)}°C
-            </text>
+        {/* SOURCE HP - Orange Box (Left) */}
+        <g onClick={() => setSelectedComponent('sourceHP')} className="cursor-pointer">
+          <rect x="20" y="80" width="160" height="200" fill="#92400e" fillOpacity="0.15" stroke="#fb923c" strokeWidth="2" rx="8" />
+          <text x="40" y="110" fill="#fb923c" fontSize="14" fontWeight="bold">SOURCE HP</text>
+          <text x="40" y="128" fill="#a3a3a3" fontSize="11">Vapeur Haute</text>
 
-            {/* Main Turbine (Center) */}
-            <ellipse cx="600" cy="350" rx="180" ry="120" fill="rgb(100, 100, 150)" stroke="#7c5cff" strokeWidth="3" />
-            <text x="600" y="330" textAnchor="middle" fill="#fff" fontSize="16" fontWeight="bold">
-              TURBINE DÉSARMÉE
-            </text>
-            <text x="600" y="360" textAnchor="middle" fill="#fff" fontSize="14">
-              GTA{gtaNumber}
-            </text>
-            <text
-              x="600"
-              y="390"
-              textAnchor="middle"
-              fill={getStatusColor(currentState.turbinePressure, [50, 60], [45, 65], [40, 70])}
-              fontSize="12"
-              fontWeight="bold"
-            >
-              {currentState.turbinePressure.toFixed(1)} bar
-            </text>
+          <circle cx="100" cy="170" r="30" fill="none" stroke="#fb923c" strokeWidth="2" />
+          <text x="100" y="175" textAnchor="middle" fill="#fb923c" fontSize="12" fontWeight="bold">59.3</text>
 
-            {/* Condenser (Bottom Center) */}
-            <rect x="520" y="520" width="160" height="100" fill="none" stroke="#00e5cc" strokeWidth="2" rx="5" />
-            <text x="600" y="545" textAnchor="middle" fill="#00e5cc" fontSize="13" fontWeight="bold">
-              CONDENSEUR PRINCIPAL
-            </text>
-            <text x="600" y="565" textAnchor="middle" fill="#00e5cc" fontSize="11">
-              1004,0 mbar
-            </text>
-            <circle
-              cx="600"
-              cy="600"
-              r="18"
-              fill={getStatusColor(currentState.condenserTemp, [15, 25], [10, 30], [5, 35])}
-              stroke="#fff"
-              strokeWidth="2"
-              opacity="0.8"
-              className="cursor-pointer hover:opacity-100"
-              onClick={() => {
-                setSelectedComponent('Condenseur')
-                onComponentClick?.('Condenseur')
-              }}
-            />
-            <text x="600" y="605" textAnchor="middle" fill="#000" fontSize="11" fontWeight="bold">
-              {currentState.condenserTemp.toFixed(1)}°C
-            </text>
+          <rect x="30" y="210" width="140" height="60" fill="none" stroke="#fb923c" strokeWidth="1" rx="4" />
+          <text x="40" y="228" fill="#a3a3a3" fontSize="9">P: 83.1 bar</text>
+          <text x="40" y="242" fill="#a3a3a3" fontSize="9">T: 555.4 °C</text>
+          <text x="40" y="256" fill="#a3a3a3" fontSize="9">Qualité: 87%</text>
+        </g>
 
-            {/* Alternator (Right) */}
-            <rect x="850" y="200" width="200" height="250" fill="rgb(25, 35, 80)" stroke="#00d9ff" strokeWidth="3" rx="10" />
-            <text x="950" y="250" textAnchor="middle" fill="#00d9ff" fontSize="16" fontWeight="bold">
-              ALTERNATEUR 3
-            </text>
+        {/* CONNECTION LINE SOURCE HP TO TURBINE */}
+        <path d="M 180 180 L 260 180" stroke="#fb923c" strokeWidth="2" markerEnd="url(#arrowhead)" />
 
-            {/* Excitation System */}
-            <rect x="880" y="280" width="140" height="80" fill="rgb(0, 50, 100)" stroke="#ffaa00" strokeWidth="2" rx="5" />
-            <text x="950" y="305" textAnchor="middle" fill="#ffaa00" fontSize="12" fontWeight="bold">
-              EXCITATION
-            </text>
-            <circle cx="920" cy="330" r="12" fill="rgb(255, 200, 0)" />
-            <circle cx="950" cy="330" r="12" fill="rgb(255, 200, 0)" />
-            <circle cx="980" cy="330" r="12" fill="rgb(255, 200, 0)" />
+        {/* TURBINE À VAPEUR - Blue Box (Center) */}
+        <g onClick={() => setSelectedComponent('turbine')} className="cursor-pointer">
+          <rect x="260" y="80" width="320" height="200" fill="#001f3f" fillOpacity="0.2" stroke="#3b82f6" strokeWidth="2" rx="10" />
+          <text x="280" y="110" fill="#3b82f6" fontSize="16" fontWeight="bold">TURBINE À VAPEUR</text>
 
-            {/* Power Output */}
-            <circle
-              cx="950"
-              cy="400"
-              r="30"
-              fill={getStatusColor(currentState.alternatorPower, [0.08, 0.12], [0.05, 0.15], [0, 0.2])}
-              stroke="#fff"
-              strokeWidth="3"
-              opacity="0.9"
-              className="cursor-pointer hover:opacity-100"
-              onClick={() => {
-                setSelectedComponent('Alternateur3')
-                onComponentClick?.('Alternateur3')
-              }}
-            />
-            <text x="950" y="395" textAnchor="middle" fill="#000" fontSize="11" fontWeight="bold">
-              {currentState.alternatorPower.toFixed(2)}
-            </text>
-            <text x="950" y="410" textAnchor="middle" fill="#000" fontSize="10">
-              MW
-            </text>
+          {/* Three turbine stages */}
+          <circle cx="310" cy="170" r="28" fill="none" stroke="#3b82f6" strokeWidth="2" />
+          <circle cx="310" cy="170" r="16" fill="#3b82f6" fillOpacity="0.2" />
+          <text x="310" y="175" textAnchor="middle" fill="#00d9ff" fontSize="10" fontWeight="bold">HP</text>
 
-            {/* Steam flow arrow */}
-            <path
-              d="M 130 225 Q 300 250 420 300"
-              fill="none"
-              stroke="#00d9ff"
-              strokeWidth="3"
-              markerEnd="url(#arrowhead)"
-            />
-            <circle
-              cx="270"
-              cy="235"
-              r="16"
-              fill={getStatusColor(currentState.steamFlow, [15, 17], [14, 18], [13, 19])}
-              stroke="#fff"
-              strokeWidth="2"
-              opacity="0.8"
-              className="cursor-pointer hover:opacity-100"
-              onClick={() => {
-                setSelectedComponent('20FT402C')
-                onComponentClick?.('20FT402C')
-              }}
-            />
-            <text x="270" y="239" textAnchor="middle" fill="#000" fontSize="10" fontWeight="bold">
-              {currentState.steamFlow.toFixed(1)}t/h
-            </text>
+          <circle cx="410" cy="170" r="28" fill="none" stroke="#3b82f6" strokeWidth="2" />
+          <circle cx="410" cy="170" r="16" fill="#3b82f6" fillOpacity="0.2" />
+          <text x="410" y="175" textAnchor="middle" fill="#00d9ff" fontSize="10" fontWeight="bold">MP</text>
 
-            {/* Exhaust steam */}
-            <path d="M 780 350 L 850 350" stroke="#ff6666" strokeWidth="3" />
-            <text x="815" y="335" textAnchor="middle" fill="#ff6666" fontSize="11" fontWeight="bold">
-              Vapeur MP
-            </text>
+          <circle cx="510" cy="170" r="28" fill="none" stroke="#3b82f6" strokeWidth="2" />
+          <circle cx="510" cy="170" r="16" fill="#3b82f6" fillOpacity="0.2" />
+          <text x="510" y="175" textAnchor="middle" fill="#00d9ff" fontSize="10" fontWeight="bold">BP</text>
 
-            {/* Condenser cooling */}
-            <path d="M 600 620 L 600 680" stroke="#00e5cc" strokeWidth="2" />
-            <text x="630" y="650" fill="#00e5cc" fontSize="11">
-              Refroidissement
-            </text>
+          {/* Parameters */}
+          <rect x="280" y="210" width="300" height="60" fill="none" stroke="#3b82f6" strokeWidth="1" rx="4" />
+          <text x="290" y="228" fill="#a3a3a3" fontSize="9">Vitesse: 3000 rpm</text>
+          <text x="290" y="242" fill="#a3a3a3" fontSize="9">Puissance: 145.6 MW</text>
+          <text x="290" y="256" fill="#a3a3a3" fontSize="9">Rendement: 87.2% | Vibration: 2.3 mm/s</text>
+        </g>
 
-            {/* Vibration indicator */}
-            <circle
-              cx="300"
-              cy="500"
-              r="20"
-              fill={getStatusColor(currentState.vibrationType3, [0.2, 0.5], [0.15, 0.6], [0.1, 0.8])}
-              stroke="#fff"
-              strokeWidth="2"
-              opacity="0.8"
-              className="cursor-pointer hover:opacity-100"
-              onClick={() => {
-                setSelectedComponent('VIB1-TV3')
-                onComponentClick?.('VIB1-TV3')
-              }}
-            />
-            <text x="300" y="505" textAnchor="middle" fill="#000" fontSize="10" fontWeight="bold">
-              VIB: {currentState.vibrationType3.toFixed(1)}
-            </text>
+        {/* CONNECTION TURBINE TO ALTERNATOR */}
+        <path d="M 580 180 L 640 180" stroke="#3b82f6" strokeWidth="2.5" markerEnd="url(#arrowhead)" />
+        <text x="605" y="165" fill="#a3a3a3" fontSize="10" textAnchor="middle">Arbre</text>
 
-            {/* Arrow marker definition */}
-            <defs>
-              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                <polygon points="0 0, 10 3, 0 6" fill="#00d9ff" />
-              </marker>
-            </defs>
-          </svg>
+        {/* ALTERNATEUR - Green Box (Right) */}
+        <g onClick={() => setSelectedComponent('alternateur')} className="cursor-pointer">
+          <rect x="640" y="80" width="220" height="200" fill="#003d33" fillOpacity="0.2" stroke="#10b981" strokeWidth="2" rx="10" />
+          <text x="660" y="110" fill="#10b981" fontSize="16" fontWeight="bold">ALTERNATEUR</text>
+
+          {/* Circular representation */}
+          <circle cx="750" cy="165" r="45" fill="none" stroke="#10b981" strokeWidth="2" />
+          <circle cx="750" cy="165" r="28" fill="#10b981" fillOpacity="0.1" />
+          <circle cx="750" cy="165" r="10" fill="#10b981" />
+
+          {/* Parameters */}
+          <rect x="660" y="220" width="200" height="60" fill="none" stroke="#10b981" strokeWidth="1" rx="4" />
+          <text x="670" y="238" fill="#a3a3a3" fontSize="9">Puissance: 165.3 MW</text>
+          <text x="670" y="252" fill="#a3a3a3" fontSize="9">Tension: 15.75 kV | Fréq: 50 Hz</text>
+          <text x="670" y="266" fill="#a3a3a3" fontSize="9">Cos φ: 0.95</text>
+        </g>
+
+        {/* CONNECTION ALTERNATOR TO NETWORK */}
+        <path d="M 860 180 L 920 180" stroke="#10b981" strokeWidth="2" markerEnd="url(#arrowhead)" />
+
+        {/* REDRESEUR - Yellow/Gold (Right) */}
+        <g onClick={() => setSelectedComponent('redreseur')} className="cursor-pointer">
+          <rect x="920" y="80" width="160" height="90" fill="#78350f" fillOpacity="0.15" stroke="#d97706" strokeWidth="2" rx="8" />
+          <text x="940" y="108" fill="#d97706" fontSize="12" fontWeight="bold">REDRESEUR</text>
+          <text x="940" y="125" fill="#a3a3a3" fontSize="9">Tension: 15.2 kV</text>
+          <text x="940" y="138" fill="#a3a3a3" fontSize="9">Excitation: 4.3 A</text>
+          <text x="940" y="151" fill="#a3a3a3" fontSize="9">THD: 2.1%</text>
+        </g>
+
+        {/* RESEAU NT - Teal/Green (Right Bottom) */}
+        <g onClick={() => setSelectedComponent('reseauNT')} className="cursor-pointer">
+          <rect x="920" y="190" width="160" height="90" fill="#014737" fillOpacity="0.15" stroke="#14b8a6" strokeWidth="2" rx="8" />
+          <text x="940" y="218" fill="#14b8a6" fontSize="12" fontWeight="bold">RESEAU NT</text>
+          <text x="940" y="235" fill="#a3a3a3" fontSize="9">Tension: 23.1 kV</text>
+          <text x="940" y="248" fill="#a3a3a3" fontSize="9">Courant: 12.5 A</text>
+          <text x="940" y="261" fill="#a3a3a3" fontSize="9">Puissance: 24.8 MW</text>
+        </g>
+
+        {/* CONDENSEUR - Cyan (Bottom Center) */}
+        <g onClick={() => setSelectedComponent('condenseur')} className="cursor-pointer">
+          <rect x="340" y="340" width="180" height="100" fill="#164e63" fillOpacity="0.15" stroke="#06b6d4" strokeWidth="2" rx="8" />
+          <text x="360" y="368" fill="#06b6d4" fontSize="12" fontWeight="bold">CONDENSEUR</text>
+          <text x="360" y="385" fill="#a3a3a3" fontSize="9">Pression: 0.08 bar</text>
+          <text x="360" y="398" fill="#a3a3a3" fontSize="9">Temp: 42.5 °C</text>
+          <text x="360" y="411" fill="#a3a3a3" fontSize="9">Débit: 289.5 t/h</text>
+        </g>
+
+        {/* EXHAUST CONNECTION */}
+        <path d="M 520 280 Q 430 310 430 340" stroke="#06b6d4" strokeWidth="2" strokeDasharray="4,4" />
+
+        {/* SOURCE MP - Small (Left Bottom) */}
+        <g onClick={() => setSelectedComponent('sourceMP')} className="cursor-pointer">
+          <rect x="20" y="340" width="130" height="100" fill="#7c2d12" fillOpacity="0.15" stroke="#f97316" strokeWidth="2" rx="6" />
+          <text x="35" y="365" fill="#f97316" fontSize="11" fontWeight="bold">SOURCE MP</text>
+          <text x="35" y="382" fill="#a3a3a3" fontSize="8">Débit: 8.7 t/h</text>
+          <text x="35" y="394" fill="#a3a3a3" fontSize="8">Press: 14.2 bar</text>
+          <text x="35" y="406" fill="#a3a3a3" fontSize="8">Temp: 312.5°C</text>
+          <text x="35" y="418" fill="#a3a3a3" fontSize="8">Qualité: 94%</text>
+        </g>
+
+        {/* CONNECTION SOURCEMP TO TURBINE */}
+        <path d="M 150 240 Q 270 270 310 280" stroke="#f97316" strokeWidth="1.5" strokeDasharray="3,3" />
+
+        {/* STATUS INDICATOR - Right Side */}
+        <g>
+          <rect x="1100" y="80" width="280" height="410" fill="none" stroke="#14b8a6" strokeWidth="2" rx="10" />
+          <text x="1120" y="110" fill="#14b8a6" fontSize="14" fontWeight="bold">ETAT SYSTEME</text>
+
+          {/* Vibration Monitoring */}
+          <rect x="1110" y="130" width="260" height="70" fill="none" stroke="#14b8a6" strokeWidth="1" opacity="0.3" rx="4" />
+          <text x="1120" y="148" fill="#a3a3a3" fontSize="10">Vibrations (mm/s):</text>
+          <text x="1120" y="165" fill="#00e5cc" fontSize="12" fontWeight="bold">V1: 1.08% | V2: 1.08%</text>
+          <text x="1120" y="180" fill="#00e5cc" fontSize="12" fontWeight="bold">V3: 0.98% | Partiel: 3.48bar</text>
+          <text x="1120" y="195" fill="#00e5cc" fontSize="12" fontWeight="bold">Cos φ: 0.855</text>
+
+          {/* Overall Status */}
+          <rect x="1110" y="215" width="260" height="85" fill="#10b981" fillOpacity="0.1" stroke="#10b981" strokeWidth="1" rx="4" />
+          <text x="1120" y="235" fill="#10b981" fontSize="11" fontWeight="bold">Status: NORMAL</text>
+          <activity cx="1340" cy="235" r="4" fill="#10b981" className="animate-pulse" />
+
+          {/* Efficiency Bar */}
+          <text x="1120" y="260" fill="#a3a3a3" fontSize="10">Rendement Global:</text>
+          <rect x="1120" y="265" width="240" height="8" fill="#334155" rx="4" />
+          <rect x="1120" y="265" width="209" height="8" fill="#10b981" rx="4" />
+          <text x="1365" y="275" fill="#10b981" fontSize="10" fontWeight="bold">87.2%</text>
+
+          {/* Temperature Status */}
+          <text x="1120" y="300" fill="#a3a3a3" fontSize="10">Température:</text>
+          <text x="1120" y="315" fill="#00e5cc" fontSize="10">Turbine: 55.7°C</text>
+          <text x="1120" y="328" fill="#00e5cc" fontSize="10">Condenser: 42.5°C</text>
+          <text x="1120" y="341" fill="#00e5cc" fontSize="10">Alternateur: 35.6°C</text>
+
+          {/* Power Output */}
+          <text x="1120" y="366" fill="#a3a3a3" fontSize="10">Puissance:</text>
+          <text x="1120" y="381" fill="#00d9ff" fontSize="12" fontWeight="bold">Turbine: 145.6 MW</text>
+          <text x="1120" y="396" fill="#10b981" fontSize="12" fontWeight="bold">Alternateur: 165.3 MW</text>
+          <text x="1120" y="411" fill="#14b8a6" fontSize="12" fontWeight="bold">Réseau: 24.8 MW</text>
+
+          {/* Last Update */}
+          <text x="1120" y="450" fill="#64748b" fontSize="8" fontStyle="italic">Mise à jour en temps réel</text>
+        </g>
+      </svg>
+
+      {/* Legend and Component Selection */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 rounded-lg border border-border bg-secondary space-y-2">
+          <h3 className="text-sm font-bold text-foreground">Composants Interactifs</h3>
+          <p className="text-xs text-muted-foreground">Cliquez sur les éléments du schéma pour voir les détails</p>
+          {selectedComponent && (
+            <div className="text-xs text-accent font-semibold mt-2">
+              Composant sélectionné: <span className="text-primary">{selectedComponent}</span>
+            </div>
+          )}
         </div>
 
-        {/* Component Details Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {components.map((comp) => {
-            const statusColor = getStatusColor(
-              typeof comp.value === 'number' ? comp.value : 0,
-              comp.normal,
-              comp.warning,
-              comp.critical
-            )
-            const isSelected = selectedComponent === comp.id
-
-            return (
-              <div
-                key={comp.id}
-                onClick={() => {
-                  setSelectedComponent(comp.id)
-                  onComponentClick?.(comp.id)
-                }}
-                className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                  isSelected ? 'border-accent bg-accent/10' : 'border-border bg-secondary hover:border-primary'
-                }`}
-              >
-                <p className="text-xs text-muted-foreground font-mono mb-1">{comp.id}</p>
-                <p className="text-sm font-semibold text-foreground mb-2">{comp.label}</p>
-                <div className="flex items-baseline gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: statusColor }}
-                  ></div>
-                  <p className="text-lg font-bold" style={{ color: statusColor }}>
-                    {typeof comp.value === 'number' ? comp.value.toFixed(2) : comp.value}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{comp.unit}</p>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Status Legend */}
-        <div className="grid grid-cols-4 gap-4 pt-4 border-t border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-cyan-500"></div>
-            <span className="text-xs text-muted-foreground">Normal</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-            <span className="text-xs text-muted-foreground">Attention</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-500"></div>
-            <span className="text-xs text-muted-foreground">Critique</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-purple-500"></div>
-            <span className="text-xs text-muted-foreground">Hors limites</span>
+        <div className="p-4 rounded-lg border border-green-500/50 bg-green-500/5">
+          <h3 className="text-sm font-bold text-green-400">Code Couleurs</h3>
+          <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+              <span className="text-muted-foreground">Vapeur HP</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <span className="text-muted-foreground">Turbine</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span className="text-muted-foreground">Alternateur</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+              <span className="text-muted-foreground">Condenseur</span>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
