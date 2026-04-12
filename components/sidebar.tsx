@@ -17,6 +17,7 @@ import {
   Sliders,
   Activity,
   BookOpen,
+  Gauge,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -65,6 +66,12 @@ const analysisNav: NavItem[] = [
 ]
 
 const advancedNav: NavItem[] = [
+  {
+    label: 'Visualisation GTA',
+    href: '/gta-visualization',
+    icon: <Gauge className="w-5 h-5" />,
+    description: 'Schémas techniques interactifs',
+  },
   {
     label: 'DAG Causal',
     href: '/causal-dag',
