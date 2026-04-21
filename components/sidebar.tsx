@@ -18,6 +18,7 @@ import {
   Activity,
   BookOpen,
   Gauge,
+  Brain,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -95,6 +96,12 @@ const advancedNav: NavItem[] = [
     href: '/explained-recommendations',
     icon: <BookOpen className="w-5 h-5" />,
     description: 'Recommandations détaillées',
+  },
+  {
+    label: 'PPO Training',
+    href: '/ppo-training',
+    icon: <Brain className="w-5 h-5" />,
+    description: 'Agent RL self-improvement',
   },
 ]
 
