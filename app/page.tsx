@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageHeader } from '@/components/page-header'
-import { GTADiagram } from '@/components/gta-diagram'
+import { GTARealtimeComponent } from '@/components/gta-realtime'
 
 interface Summary {
   data: {
@@ -155,16 +155,8 @@ export default function Home() {
                 </Card>
               </div>
 
-              {/* GTA Diagram Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-foreground">Groupes Turbo-Alternateurs</h2>
-                  <Link href="/gta-visualization" className="text-primary hover:text-accent text-sm font-semibold">
-                    Vue détaillée →
-                  </Link>
-                </div>
-                <GTADiagram gtaNumber={3} />
-              </div>
+              {/* GTA Realtime Section */}
+              <GTARealtimeComponent />
 
               {/* Data Summary */}
               <Card className="bg-card border-border">
