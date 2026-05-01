@@ -36,10 +36,10 @@ export function DashboardHome() {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const res = await fetch('/api/summary')
-        if (!res.ok) throw new Error('Failed to fetch summary')
+        const res = await fetch('/api/analytics')
+        if (!res.ok) throw new Error('Failed to fetch analytics')
         const data = await res.json()
-        setSummary(data)
+        setSummary(data.summary)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {

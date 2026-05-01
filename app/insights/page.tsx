@@ -19,10 +19,10 @@ export default function InsightsPage() {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const res = await fetch('/api/insights')
-        if (!res.ok) throw new Error('Failed to fetch insights')
+        const res = await fetch('/api/analytics')
+        if (!res.ok) throw new Error('Failed to fetch analytics')
         const json = await res.json()
-        setInsights(json)
+        setInsights(json.insights)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
