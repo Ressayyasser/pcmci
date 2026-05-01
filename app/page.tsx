@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageHeader } from '@/components/page-header'
-import { GTARealtimeComponent } from '@/components/gta-realtime'
+import { GTADetailedSchema } from '@/components/gta-detailed-schema'
 
 interface Summary {
   data: {
@@ -155,8 +155,8 @@ export default function Home() {
                 </Card>
               </div>
 
-              {/* GTA Realtime Section */}
-              <GTARealtimeComponent />
+              {/* GTA Detailed Schema Section */}
+              <GTADetailedSchema />
 
               {/* Data Summary */}
               <Card className="bg-card border-border">
