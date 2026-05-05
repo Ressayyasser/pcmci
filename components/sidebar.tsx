@@ -17,6 +17,8 @@ import {
   Sliders,
   Activity,
   BookOpen,
+  Gauge,
+  Brain,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -45,26 +47,26 @@ const analysisNav: NavItem[] = [
     description: 'Détection de causalité',
   },
   {
-    label: 'Anomalies',
+    label: 'Anomalies Causales',
     href: '/anomalies',
     icon: <AlertTriangle className="w-5 h-5" />,
     description: 'Détection et analyse',
   },
   {
-    label: 'Stratégie RL',
-    href: '/rl-strategy',
-    icon: <Zap className="w-5 h-5" />,
-    description: 'Q-Learning optimization',
-  },
-  {
     label: 'Insights',
     href: '/insights',
     icon: <Lightbulb className="w-5 h-5" />,
-    description: 'Recommandations',
+    description: 'Recommandations analytics',
   },
 ]
 
 const advancedNav: NavItem[] = [
+  {
+    label: 'Visualisation GTA',
+    href: '/gta-visualization',
+    icon: <Gauge className="w-5 h-5" />,
+    description: 'Schémas techniques interactifs',
+  },
   {
     label: 'DAG Causal',
     href: '/causal-dag',
@@ -84,10 +86,10 @@ const advancedNav: NavItem[] = [
     description: 'Signaux interactifs',
   },
   {
-    label: 'Explications',
-    href: '/explained-recommendations',
-    icon: <BookOpen className="w-5 h-5" />,
-    description: 'Recommandations détaillées',
+    label: 'PPO Agent Training',
+    href: '/ppo-training',
+    icon: <Brain className="w-5 h-5" />,
+    description: 'RL agent auto-improvement',
   },
 ]
 
